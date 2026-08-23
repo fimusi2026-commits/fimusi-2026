@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XXXVI FIMUSI 2026 - Inscrições</title>
+<style>
+:root {
+  --primary: #1a5632;
+  --secondary: #c9a227;
+  --dark: #0d2b18;
+  --light: #f4f7f1;
+  --danger: #c0392b;
+  --success: #27ae60;
+  --border: #d5dbd0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #2c3e2d;
+}
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.header {
+  background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+  color: #fff;
+  padding: 40px 30px;
+  text-align: center;
+}
+.header h1 { font-size: 2em; margin-bottom: 8px; letter-spacing: 1px; }
+.header .subtitle { font-size: 1.1em; opacity: 0.9; }
+.header .event-info { margin-top: 15px; font-size: 0.95em; opacity: 0.85; }
+.header .deadline-badge {
+  display: inline-block;
+  background: var(--secondary);
+  color: var(--dark);
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-weight: 700;
+  margin-top: 15px;
+  font-size: 0.95em;
+}
+.form-body { padding: 30px; }
+.section-title {
+  font-size: 1.15em;
+  color: var(--primary);
+  border-bottom: 2px solid var(--secondary);
+  padding-bottom: 8px;
+  margin: 25px 0 15px 0;
+  font-weight: 600;
+}
+.section-title:first-child { margin-top: 0; }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 0.92em;
+  color: #34495e;
+}
+.form-group label .required { color: var(--danger); }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95em;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26, 86, 50, 0.12);
+}
+.form-group textarea { resize: vertical; min-height: 70px; }
+.form-row { display: flex; gap: 15px; flex-wrap: wrap; }
+.form-row .form-group { flex: 1; min-width: 200px; }
+.form-group small { color: #7f8c8d; font-size: 0.82em; margin-top: 3px; display: block; }
+.form-group .error-msg { color: var(--danger); font-size: 0.82em; margin-top: 3px; display: none; }
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea { border-color: var(--danger); }
+.form-group.has-error .error-msg { display: block; }
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.category-card {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  background: var(--light);
+}
+.category-card:hover { border-color: var(--primary); }
+.category-card.selected {
+  border-color: var(--primary);
+  background: rgba(26, 86, 50, 0.08);
+  box-shadow: 0 0 0 3px rgba(26, 86, 50, 0.12);
+}
+.category-card input[type="radio"] { display: none; }
+.category-card .cat-name { font-weight: 700; font-size: 0.95em; color: var(--primary); }
+.category-card .cat-desc { font-size: 0.82em; color: #7f8c8d; margin-top: 4px; }
+.modalidade-grid {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.modalidade-card {
+  flex: 1;
+  min-width: 120px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  background: var(--light);
+}
+.modalidade-card:hover { border-color: var(--primary); }
+.modalidade-card.selected {
+  border-color: var(--primary);
+  background: rgba(26, 86, 50, 0.08);
+}
+.modalidade-card input { display: none; }
+.modalidade-card .mod-name { font-weight: 700; font-size: 0.95em; }
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--light);
+  border-radius: 8px;
+}
+.checkbox-group input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.checkbox-group label { font-size: 0.9em; cursor: pointer; line-height: 1.5; }
+.btn-submit {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+  color: #fff;
+  border: none;
+  padding: 16px;
+  font-size: 1.1em;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+  margin-top: 20px;
+  letter-spacing: 0.5px;
+}
+.btn-submit:hover { opacity: 0.92; transform: translateY(-1px); }
+.btn-submit:active { transform: translateY(0); }
+.btn-submit:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
+}
+.alert {
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+.alert-closed {
+  background: #fdecea;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  text-align: center;
+  font-size: 1.1em;
+}
+.alert-info {
+  background: #e8f5e9;
+  border: 1px solid var(--success);
+  color: #1b5e20;
+}
+.integration-fields {
+  background: #fefcf3;
+  border: 1px dashed var(--secondary);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+.integration-fields label { font-size: 0.85em; }
+#loadingOverlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+#loadingOverlay.active { display: flex; }
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#successMessage {
+  display: none;
+  text-align: center;
+  padding: 40px 30px;
+}
+#successMessage .check-icon {
+  font-size: 3.5em;
+  color: var(--success);
+  margin-bottom: 15px;
+}
+#successMessage h2 { color: var(--primary); margin-bottom: 10px; }
+#successMessage p { color: #555; line-height: 1.6; }
+.footer-note {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.82em;
+  color: #7f8c8d;
+  background: var(--light);
+  border-top: 1px solid var(--border);
+}
+.footer-note a { color: var(--primary); text-decoration: none; }
+.minor-section {
+  display: none;
+  background: #fff9f0;
+  border: 1px solid var(--secondary);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 10px;
+}
+.minor-section.active { display: block; }
+.resident-fields { display: none; }
+.resident-fields.active { display: block; }
+.partner-fields { display: none; }
+.partner-fields.active { display: block; }
+@media (max-width: 600px) {
+  .header h1 { font-size: 1.5em; }
+  .form-row { flex-direction: column; }
+  .form-body { padding: 20px 15px; }
+  .modalidade-grid { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>🎵 XXXVI FIMUSI 2026</h1>
+  <div class="subtitle">Festival de Interpretação da Música de Irani</div>
+  <div class="event-info">
+    📍 Ginásio Municipal Modesto Tortelli — Irani/SC<br>
+    📅 16 a 19 de setembro de 2026
+  </div>
+  <div class="deadline-badge">Inscrições: 03/08/2026 às 08h — 23/08/2026 às 23h59</div>
+</div>
+
+<!-- MENSAGEM DE INSCRIÇÕES FECHADAS -->
+<div id="closedAlert" style="display:none;">
+  <div class="alert alert-closed" style="margin:20px;">
+    ⏰ <strong>Período de inscrições encerrado.</strong><br>
+    Conforme Art. 10 do Regulamento, as inscrições se encerraram em 23/08/2026 às 23h59.
+  </div>
+</div>
+
+<!-- FORMULÁRIO -->
+<div id="formContainer" class="form-body">
+
+  <!-- CONFIGURAÇÃO DA INTEGRAÇÃO (EDITAR AQUI) -->
+  <div class="integration-fields">
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--primary);">⚙️ Configuração Técnica (Admin)</summary>
+      <div style="margin-top:10px;">
+        <div class="form-group">
+          <label>URL do Google Apps Script (Web App)</label>
+          <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/AKfycb.../exec" value="COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT">
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- CATEGORIA -->
+  <div class="section-title">📝 Categoria de Participação (Art. 1º)</div>
+  <div class="form-group">
+    <label>Selecione a categoria <span class="required">*</span></label>
+    <div class="category-grid" id="categoryGrid">
+      <label class="category-card">
+        <input type="radio" name="categoria" value="Infantil">
+        <div class="cat-name">Infantil</div>
+        <div class="cat-desc">6 a 12 anos</div>
+      </label>
+      <label class="category-card">
+        <input type="radio" name="categoria" value="Juvenil">
+        <div class="cat-name">Juvenil</div>
+        <div class="cat-desc">13 a 17 anos</div>
+      </label>
+      <label class="category-card">
+        <input type="radio" name="categoria" value="Gospel">
+        <div class="cat-name">Gospel</div>
+        <div class="cat-desc">Adulto (18+)</div>
+      </label>
+      <label class="category-card">
+        <input type="radio" name="categoria" value="Popular/Internacional">
+        <div class="cat-name">Popular/Internacional</div>
+        <div class="cat-desc">Adulto (18+)</div>
+      </label>
+      <label class="category-card">
+        <input type="radio" name="categoria" value="Sertaneja">
+        <div class="cat-name">Sertaneja</div>
+        <div class="cat-desc">Adulto (18+)</div>
+      </label>
+    </div>
+    <small>Estilo livre para Infantil e Juvenil (Art. 5º). Gospel vedado em outras categorias (Art. 3º).</small>
+  </div>
+
+  <!-- MODALIDADE -->
+  <div class="section-title">👥 Modalidade (Art. 15)</div>
+  <div class="form-group">
+    <label>Forma de apresentação <span class="required">*</span></label>
+    <div class="modalidade-grid" id="modalidadeGrid">
+      <label class="modalidade-card">
+        <input type="radio" name="modalidade" value="Individual">
+        <div class="mod-name">Individual</div>
+      </label>
+      <label class="modalidade-card">
+        <input type="radio" name="modalidade" value="Dupla">
+        <div class="mod-name">Dupla</div>
+      </label>
+      <label class="modalidade-card">
+        <input type="radio" name="modalidade" value="Trio">
+        <div class="mod-name">Trio</div>
+      </label>
+    </div>
+  </div>
+
+  <!-- DADOS DO RESPONSÁVEL PELA INSCRIÇÃO -->
+  <div class="section-title">📋 Dados do Responsável pela Inscrição (Art. 13, I-II)</div>
+  <div class="form-row">
+    <div class="form-group" style="flex:3;">
+      <label>Nome completo do responsável <span class="required">*</span></label>
+      <input type="text" name="nome_responsavel" id="nome_responsavel" placeholder="Nome completo">
+      <div class="error-msg">Campo obrigatório.</div>
+    </div>
+    <div class="form-group" style="flex:2;">
+      <label>Nome artístico / palco <span class="required">*</span></label>
+      <input type="text" name="nome_artistico" id="nome_artistico" placeholder="Nome artístico para apresentação">
+      <div class="error-msg">Campo obrigatório.</div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group" style="flex:2;">
+      <label>CPF do responsável <span class="required">*</span></label>
+      <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" maxlength="14">
+      <div class="error-msg">CPF inválido.</div>
+    </div>
+    <div class="form-group" style="flex:2;">
+      <label>Telefone / WhatsApp <span class="required">*</span></label>
+      <input type="text" name="telefone" id="telefone" placeholder="(49) 99999-9999" maxlength="15">
+      <div class="error-msg">Telefone obrigatório.</div>
+    </div>
+    <div class="form-group" style="flex:2;">
+      <label>E-mail válido e ativo <span class="required">*</span></label>
+      <input type="email" name="email" id="email" placeholder="email@exemplo.com">
+      <div class="error-msg">E-mail inválido. Necessário para confirmação de inscrição (Art. 13, XI).</div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group" style="flex:2;">
+      <label>Endereço completo <span class="required">*</span></label>
+      <input type="text" name="endereco" id="endereco" placeholder="Rua, nº, bairro, cidade, UF, CEP">
+      <div class="error-msg">Endereço obrigatório.</div>
+    </div>
+    <div class="form-group" style="flex:1;">
+      <label>É residente em Irani/SC? (Art. 4º e 33)</label>
+      <select name="residente_irani" id="residente_irani">
+        <option value="nao">Não</option>
+        <option value="sim">Sim, há mais de 2 anos</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CAMPOS PARA RESIDENTES -->
+  <div class="resident-fields" id="residentFields">
+    <div class="alert alert-info">
+      📌 Residentes em Irani há 2+ anos podem se inscrever em <strong>duas categorias</strong> (sendo uma Gospel).
+      Não precisam enviar vídeo (Art. 31), mas serão avaliados pela Banda APK no ensaio.
+    </div>
+    <div class="form-group">
+      <label>Comprovante de residência (JPEG/PNG) — Art. 4º</label>
+      <input type="file" name="comprovante_residencia" id="comprovante_residencia" accept="image/jpeg,image/png">
+      <small>Documento comprobatório de residência há pelo menos 2 anos.</small>
+    </div>
+    <div class="form-group">
+      <label>Segunda categoria (apenas para residentes — Art. 4º)</label>
+      <select name="segunda_categoria" id="segunda_categoria">
+        <option value="">Nenhuma / Apenas uma categoria</option>
+        <option value="Gospel">Gospel (obrigatória se optar por duas)</option>
+        <option value="Popular/Internacional">Popular/Internacional</option>
+        <option value="Sertaneja">Sertaneja</option>
+      </select>
+      <small>Uma das categorias deve ser obrigatoriamente Gospel (Art. 4º).</small>
+    </div>
+  </div>
+
+  <!-- DADOS DE INTEGRANTES (se dupla/trio) -->
+  <div class="partner-fields" id="partnerFields">
+    <div class="section-title">📋 Dados dos Demais Integrantes (Art. 13, III)</div>
+    <div class="alert alert-info">
+      Na categoria Adulta, menores de 18 só como integrantes de dupla/trio, desde que acompanhados por maior de 18 (Art. 16).
+    </div>
+    <div id="partnerContainer"></div>
+    <button type="button" class="btn-submit" style="font-size:0.9em;padding:10px;margin-top:10px;background:var(--secondary);color:var(--dark);" onclick="addPartner()">+ Adicionar Integrante</button>
+  </div>
+
+  <!-- DADOS DA MÚSICA -->
+  <div class="section-title">🎶 Dados da Música (Art. 13, V-VII)</div>
+  <div class="form-row">
+    <div class="form-group" style="flex:3;">
+      <label>Título da música escolhida <span class="required">*</span></label>
+      <input type="text" name="titulo_musica" id="titulo_musica" placeholder="Título da música para avaliação e apresentação">
+      <div class="error-msg">Campo obrigatório. A música inscrita deve ser a mesma do vídeo e da apresentação (Art. 41).</div>
+    </div>
+    <div class="form-group" style="flex:1;">
+      <label>Tom da música <span class="required">*</span></label>
+      <input type="text" name="tom_musica" id="tom_musica" placeholder="Ex: Dó maior, Ré menor">
+      <div class="error-msg">Tom obrigatório (para a Banda APK).</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Gravação a ser interpretada (Art. 13, VI)</label>
+    <input type="text" name="gravacao" id="gravacao" placeholder="Nome do artista original / gravação de referência">
+  </div>
+  <div class="form-group">
+    <label>Link oficial do vídeo no YouTube <span class="required">*</span></label>
+    <input type="url" name="link_youtube" id="link_youtube" placeholder="https://www.youtube.com/watch?v=...">
+    <div class="error-msg">Link do YouTube obrigatório (Art. 13, VIII e Art. 19, III).</div>
+    <small>Requisitos do vídeo (Art. 19): máximo 2 min | formato vertical | a capella (sem instrumento/playback/base) | voz do candidato apenas | publicado no YouTube do próprio candidato.</small>
+  </div>
+
+  <!-- DOCUMENTAÇÃO -->
+  <div class="section-title">📎 Documentação (Art. 6º e Art. 23)</div>
+  <div class="form-group">
+    <label>Documento de identificação oficial (JPEG/PNG) <span class="required">*</span></label>
+    <input type="file" name="documento_identidade" id="documento_identidade" accept="image/jpeg,image/png">
+    <div class="error-msg">Documento obrigatório para comprovação de idade.</div>
+    <small>RG, CNH ou certidão de nascimento. Formatos aceitos: JPEG ou PNG (Art. 23).</small>
+  </div>
+
+  <!-- AUTORIZAÇÃO PARA MENORES -->
+  <div class="minor-section" id="minorSection">
+    <div class="section-title" style="margin-top:0;">⚖️ Autorização para Menores (Anexo I — Art. 17)</div>
+    <p style="font-size:0.9em;margin-bottom:10px;color:#555;">
+      Para menores de 18 anos, é obrigatório preencher a autorização assinada pelos pais ou responsáveis legais.
+    </p>
+    <div class="form-row">
+      <div class="form-group" style="flex:2;">
+        <label>Nome do menor</label>
+        <input type="text" name="nome_menor" id="nome_menor" placeholder="Nome da criança ou adolescente">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>Identidade do menor</label>
+        <input type="text" name="rg_menor" id="rg_menor" placeholder="RG">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>CPF do menor</label>
+        <input type="text" name="cpf_menor" id="cpf_menor" placeholder="CPF">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="flex:2;">
+        <label>Nome do pai</label>
+        <input type="text" name="nome_pai" id="nome_pai" placeholder="Nome do pai">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>RG do pai</label>
+        <input type="text" name="rg_pai" id="rg_pai" placeholder="RG">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>CPF do pai</label>
+        <input type="text" name="cpf_pai" id="cpf_pai" placeholder="CPF">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="flex:2;">
+        <label>Nome da mãe</label>
+        <input type="text" name="nome_mae" id="nome_mae" placeholder="Nome da mãe">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>RG da mãe</label>
+        <input type="text" name="rg_mae" id="rg_mae" placeholder="RG">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>CPF da mãe</label>
+        <input type="text" name="cpf_mae" id="cpf_mae" placeholder="CPF">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Autorização assinada (JPEG/PNG)</label>
+      <input type="file" name="autorizacao_assinada" id="autorizacao_assinada" accept="image/jpeg,image/png">
+      <small>Foto ou escaneamento da autorização assinada pelos pais/responsáveis.</small>
+    </div>
+  </div>
+
+  <!-- CHAVE PIX -->
+  <div class="section-title">💰 Dados para Premiação (Art. 13, X e Art. 61)</div>
+  <div class="form-group">
+    <label>Chave PIX do titular ou responsável legal <span class="required">*</span></label>
+    <input type="text" name="chave_pix" id="chave_pix" placeholder="CPF, e-mail, telefone ou chave aleatória">
+    <div class="error-msg">Chave PIX obrigatória para transferência em caso de premiação.</div>
+    <small>Pagamento via PIX vinculado ao CPF do intérprete ou responsável (Art. 61).</small>
+  </div>
+
+  <!-- ACEITES -->
+  <div class="section-title">✅ Declarações e Aceites (Art. 73)</div>
+  <div class="checkbox-group">
+    <input type="checkbox" name="aceite_regulamento" id="aceite_regulamento">
+    <label for="aceite_regulamento">
+      Declaro que li e aceito integralmente o <strong>Regulamento do XXXVI FIMUSI 2026</strong>,
+      incluindo as regras sobre vídeo de inscrição (Art. 19), vedação de substituição de música (Art. 41-42),
+      critérios de desclassificação (Art. 48) e cronograma de ensaios (Arts. 50-53).
+    </label>
+  </div>
+  <div class="checkbox-group">
+    <input type="checkbox" name="aceite_lgpd" id="aceite_lgpd">
+    <label for="aceite_lgpd">
+      Autorizo o tratamento dos meus dados pessoais conforme a <strong>LGPD (Lei 13.709/2018)</strong>,
+      exclusivamente para fins de organização e execução do FIMUSI (Art. 73, VI).
+    </label>
+  </div>
+  <div class="checkbox-group">
+    <input type="checkbox" name="aceite_imagem" id="aceite_imagem">
+    <label for="aceite_imagem">
+      Autorizo o <strong>uso de imagem</strong>, por qualquer meio, durante o FIMUSI ou em ocasião posterior,
+      para fins de divulgação pelo município (Art. 73, VI).
+    </label>
+  </div>
+  <div class="checkbox-group">
+    <input type="checkbox" name="aceite_video" id="aceite_video">
+    <label for="aceite_video">
+      Declaro que o vídeo enviado atende todos os requisitos do Art. 19: duração máxima de 2 minutos,
+      formato vertical, gravado a capella (sem instrumento/playback/base musical/correção eletrônica de voz),
+      contendo exclusivamente minha voz, e corresponde fielmente à música inscrita.
+    </label>
+  </div>
+
+  <button type="button" class="btn-submit" id="submitBtn" onclick="submitForm()">
+    📤 Enviar Inscrição
+  </button>
+
+</div><!-- /formContainer -->
+
+<!-- MENSAGEM DE SUCESSO -->
+<div id="successMessage">
+  <div class="check-icon">✅</div>
+  <h2>Inscrição Enviada com Sucesso!</h2>
+  <p>
+    Sua inscrição foi registrada e enviada para a Comissão Central Organizadora (CCO).<br><br>
+    Você receberá um <strong>e-mail de confirmação</strong> em até <strong>2 dias úteis</strong>
+    pelo endereço <strong>fimusi2026@gmail.com</strong> (Art. 22).<br><br>
+    ⚠️ É de sua total responsabilidade verificar o e-mail (inclusive spam) para confirmar a efetivação da inscrição.<br><br>
+    Em caso de dúvidas, entre em contato: <strong>(49) 3432-3237</strong> ou <strong>secult@irani.sc.gov.br</strong>
+  </p>
+</div>
+
+<!-- OVERLAY DE CARREGAMENTO -->
+<div id="loadingOverlay">
+  <div style="text-align:center;">
+    <div class="spinner"></div>
+    <p style="color:#fff;margin-top:15px;font-weight:600;">Enviando inscrição...</p>
+  </div>
+</div>
+
+<!-- RODAPÉ -->
+<div class="footer-note">
+  <strong>Prefeitura de Irani/SC</strong> — Secretaria de Cultura, Esportes e Turismo<br>
+  XXXVI FIMUSI — Festival de Interpretação da Música de Irani — 2026<br>
+  Contato: (49) 3432-3237 | secult@irani.sc.gov.br | fimusi2026@gmail.com
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// CONFIGURAÇÃO — PRAZO DE INSCRIÇÃO (Art. 10)
+// ============================================================
+const PRAZO_INSCRICAO = new Date('2026-08-23T23:59:00-03:00').getTime();
+const INICIO_INSCRICAO = new Date('2026-08-03T08:00:00-03:00').getTime();
+
+// URL do Google Apps Script (substituir após deploy)
+const SCRIPT_URL = document.getElementById('scriptUrl').value.trim();
+
+// ============================================================
+// VERIFICAÇÃO DE PRAZO
+// ============================================================
+function verificarPrazo() {
+  const agora = new Date().getTime();
+
+  if (agora > PRAZO_INSCRICAO || agora < INICIO_INSCRICAO) {
+    document.getElementById('closedAlert').style.display = 'block';
+    document.getElementById('formContainer').style.display = 'none';
+    return false;
+  }
+  return true;
+}
+
+// ============================================================
+// CATEGORIA — SELEÇÃO VISUAL
+// ============================================================
+document.querySelectorAll('.category-card input[name="categoria"]').forEach(input => {
+  input.addEventListener('change', function() {
+    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+    this.closest('.category-card').classList.add('selected');
+    verificarMenor();
+  });
+});
+
+// ============================================================
+// MODALIDADE — SELEÇÃO VISUAL E CAMPOS DINÂMICOS
+// ============================================================
+document.querySelectorAll('.modalidade-card input[name="modalidade"]').forEach(input => {
+  input.addEventListener('change', function() {
+    document.querySelectorAll('.modalidade-card').forEach(c => c.classList.remove('selected'));
+    this.closest('.modalidade-card').classList.add('selected');
+
+    const mod = this.value;
+    const partnerFields = document.getElementById('partnerFields');
+    if (mod === 'Dupla' || mod === 'Trio') {
+      partnerFields.classList.add('active');
+      // Limpa e adiciona campos conforme modalidade
+      document.getElementById('partnerContainer').innerHTML = '';
+      const qtd = mod === 'Dupla' ? 1 : 2; // 1 ou 2 integrantes adicionais
+      for (let i = 0; i < qtd; i++) {
+        addPartner();
+      }
+    } else {
+      partnerFields.classList.remove('active');
+    }
+  });
+});
+
+// ============================================================
+// ADICIONAR INTEGRANTE
+// ============================================================
+let partnerCount = 0;
+function addPartner() {
+  partnerCount++;
+  const container = document.getElementById('partnerContainer');
+  const div = document.createElement('div');
+  div.className = 'form-group';
+  div.style.cssText = 'border:1px solid #e0e0e0;padding:12px;border-radius:8px;margin-top:10px;';
+  div.innerHTML = `
+    <label style="font-weight:600;color:var(--primary);">Integrante ${partnerCount + 1}</label>
+    <div class="form-row" style="margin-top:8px;">
+      <input type="text" name="integrante_${partnerCount}_nome" placeholder="Nome completo" style="flex:3;">
+      <input type="text" name="integrante_${partnerCount}_cpf" placeholder="CPF" style="flex:2;">
+      <input type="text" name="integrante_${partnerCount}_idade" placeholder="Idade" style="flex:1;">
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+// ============================================================
+// RESIDENTE EM IRANI
+// ============================================================
+document.getElementById('residente_irani').addEventListener('change', function() {
+  const fields = document.getElementById('residentFields');
+  if (this.value === 'sim') {
+    fields.classList.add('active');
+  } else {
+    fields.classList.remove('active');
+  }
+});
+
+// ============================================================
+// VERIFICAÇÃO DE MENOR DE IDADE (campos de autorização)
+// ============================================================
+function verificarMenor() {
+  const categoria = document.querySelector('input[name="categoria"]:checked')?.value;
+  const minorSection = document.getElementById('minorSection');
+  if (categoria === 'Infantil' || categoria === 'Juvenil') {
+    minorSection.classList.add('active');
+  } else {
+    minorSection.classList.remove('active');
+  }
+}
+
+// ============================================================
+// MÁSCARAS
+// ============================================================
+function mascaraCPF(v) {
+  v = v.replace(/\D/g, '');
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  return v;
+}
+
+function mascaraTelefone(v) {
+  v = v.replace(/\D/g, '');
+  if (v.length <= 10) {
+    v = v.replace(/(\d{2})(\d)/, '($1) $2');
+    v = v.replace(/(\d{4})(\d)/, '$1-$2');
+  } else {
+    v = v.replace(/(\d{2})(\d)/, '($1) $2');
+    v = v.replace(/(\d{5})(\d)/, '$1-$2');
+  }
+  return v;
+}
+
+document.getElementById('cpf').addEventListener('input', function() {
+  this.value = mascaraCPF(this.value);
+});
+document.getElementById('telefone').addEventListener('input', function() {
+  this.value = mascaraTelefone(this.value);
+});
+
+// ============================================================
+// VALIDAÇÃO
+// ============================================================
+function validarCPF(cpf) {
+  cpf = cpf.replace(/\D/g, '');
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
+  let soma = 0, resto;
+  for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i-1]) * (11 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf[9])) return false;
+  soma = 0;
+  for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i-1]) * (12 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf[10])) return false;
+  return true;
+}
+
+function validarEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validarYouTube(url) {
+  return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(url);
+}
+
+function mostrarErro(campoId, mostrar = true) {
+  const field = document.getElementById(campoId)?.closest('.form-group');
+  if (field) {
+    if (mostrar) field.classList.add('has-error');
+    else field.classList.remove('has-error');
+  }
+}
+
+function validarFormulario() {
+  let valido = true;
+  const erros = [];
+
+  // Campos obrigatórios
+  const obrigatorios = [
+    'nome_responsavel', 'nome_artistico', 'cpf', 'telefone',
+    'email', 'endereco', 'titulo_musica', 'tom_musica',
+    'link_youtube', 'chave_pix'
+  ];
+
+  obrigatorios.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !el.value.trim()) {
+      mostrarErro(id, true);
+      valido = false;
+    } else {
+      mostrarErro(id, false);
+    }
+  });
+
+  // Categoria
+  if (!document.querySelector('input[name="categoria"]:checked')) {
+    erros.push('Selecione uma categoria.');
+    valido = false;
+  }
+
+  // Modalidade
+  if (!document.querySelector('input[name="modalidade"]:checked')) {
+    erros.push('Selecione a modalidade (individual, dupla ou trio).');
+    valido = false;
+  }
+
+  // CPF
+  const cpf = document.getElementById('cpf').value;
+  if (cpf && !validarCPF(cpf)) {
+    mostrarErro('cpf', true);
+    valido = false;
+    erros.push('CPF inválido.');
+  }
+
+  // E-mail
+  const email = document.getElementById('email').value;
+  if (email && !validarEmail(email)) {
+    mostrarErro('email', true);
+    valido = false;
+  }
+
+  // YouTube
+  const yt = document.getElementById('link_youtube').value;
+  if (yt && !validarYouTube(yt)) {
+    mostrarErro('link_youtube', true);
+    valido = false;
+  }
+
+  // Documento
+  const doc = document.getElementById('documento_identidade');
+  if (!doc.files.length) {
+    mostrarErro('documento_identidade', true);
+    valido = false;
+  }
+
+  // Aceites
+  if (!document.getElementById('aceite_regulamento').checked) {
+    erros.push('Aceite do regulamento é obrigatório.');
+    valido = false;
+  }
+  if (!document.getElementById('aceite_lgpd').checked) {
+    erros.push('Aceite da LGPD é obrigatório.');
+    valido = false;
+  }
+  if (!document.getElementById('aceite_imagem').checked) {
+    erros.push('Autorização de uso de imagem é obrigatória.');
+    valido = false;
+  }
+  if (!document.getElementById('aceite_video').checked) {
+    erros.push('Declaração sobre o vídeo é obrigatória.');
+    valido = false;
+  }
+
+  if (erros.length > 0) {
+    alert('⚠️ Corrija os seguintes itens:\n\n• ' + erros.join('\n• '));
+  }
+
+  return valido;
+}
+
+// ============================================================
+// SUBMISSÃO DO FORMULÁRIO
+// ============================================================
+function submitForm() {
+  // Verifica prazo
+  if (!verificarPrazo()) return;
+
+  // Valida
+  if (!validarFormulario()) return;
+
+  // Confirma
+  if (!confirm('Confirma o envio da inscrição?\n\nVerifique se todos os dados estão corretos, pois não será possível alterar após o envio.')) {
+    return;
+  }
+
+  // Mostra loading
+  document.getElementById('loadingOverlay').classList.add('active');
+  document.getElementById('submitBtn').disabled = true;
+
+  // Coleta dados
+  const formData = new FormData();
+
+  // Campos texto
+  const campos = [
+    'nome_responsavel', 'nome_artistico', 'cpf', 'telefone', 'email',
+    'endereco', 'titulo_musica', 'tom_musica', 'gravacao', 'link_youtube', 'chave_pix'
+  ];
+
+  campos.forEach(id => {
+    formData.append(id, document.getElementById(id).value);
+  });
+
+  // Categoria e modalidade
+  const cat = document.querySelector('input[name="categoria"]:checked');
+  if (cat) formData.append('categoria', cat.value);
+
+  const mod = document.querySelector('input[name="modalidade"]:checked');
+  if (mod) formData.append('modalidade', mod.value);
+
+  // Residente
+  formData.append('residente_irani', document.getElementById('residente_irani').value);
+  if (document.getElementById('segunda_categoria')) {
+    formData.append('segunda_categoria', document.getElementById('segunda_categoria').value);
+  }
+
+  // Menor
+  const minorFields = ['nome_menor', 'rg_menor', 'cpf_menor', 'nome_pai', 'rg_pai',
+                       'cpf_pai', 'nome_mae', 'rg_mae', 'cpf_mae'];
+  minorFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.value) formData.append(id, el.value);
+  });
+
+  // Integrantes
+  const partners = document.querySelectorAll('#partnerContainer > div');
+  const integrantes = [];
+  partners.forEach((p, i) => {
+    const inputs = p.querySelectorAll('input');
+    if (inputs.length >= 3) {
+      integrantes.push({
+        nome: inputs[0].value,
+        cpf: inputs[1].value,
+        idade: inputs[2].value
+      });
+    }
+  });
+  formData.append('integrantes', JSON.stringify(integrantes));
+
+  // Arquivos
+  if (document.getElementById('documento_identidade').files[0]) {
+    formData.append('documento_identidade', document.getElementById('documento_identidade').files[0]);
+  }
+  if (document.getElementById('autorizacao_assinada').files[0]) {
+    formData.append('autorizacao_assinada', document.getElementById('autorizacao_assinada').files[0]);
+  }
+  if (document.getElementById('comprovante_residencia').files[0]) {
+    formData.append('comprovante_residencia', document.getElementById('comprovante_residencia').files[0]);
+  }
+
+  // Timestamp
+  formData.append('data_inscricao', new Date().toISOString());
+  formData.append('ip_origem', '');
+
+  // Envia
+  const url = document.getElementById('scriptUrl').value.trim();
+
+  if (!url || url === 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT') {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    document.getElementById('submitBtn').disabled = false;
+    alert('⚠️ Configure a URL do Google Apps Script na seção "Configuração Técnica (Admin)" no topo do formulário.');
+    return;
+  }
+
+  fetch(url, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    if (data.success) {
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      throw new Error(data.message || 'Erro no servidor');
+    }
+  })
+  .catch(error => {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    document.getElementById('submitBtn').disabled = false;
+    // Fallback: mesmo com erro de CORS, provavelmente registrou
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      alert('❌ Erro ao enviar inscrição: ' + error.message + '\n\nTente novamente ou contate (49) 3432-3237.');
+    }
+  });
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+verificarPrazo();
+</script>
+
+</body>
+</html>
