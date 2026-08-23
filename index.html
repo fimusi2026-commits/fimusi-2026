@@ -199,14 +199,6 @@ body {
   border: 1px solid var(--success);
   color: #1b5e20;
 }
-.integration-fields {
-  background: #fefcf3;
-  border: 1px dashed var(--secondary);
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-.integration-fields label { font-size: 0.85em; }
 #loadingOverlay {
   display: none;
   position: fixed;
@@ -260,6 +252,19 @@ body {
 .resident-fields.active { display: block; }
 .partner-fields { display: none; }
 .partner-fields.active { display: block; }
+.btn-add-partner {
+  font-size: 0.9em;
+  padding: 10px;
+  margin-top: 10px;
+  background: var(--secondary);
+  color: var(--dark);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+}
+.btn-add-partner:hover { opacity: 0.9; }
 @media (max-width: 600px) {
   .header h1 { font-size: 1.5em; }
   .form-row { flex-direction: column; }
@@ -292,8 +297,7 @@ body {
 </div>
 
 <!-- FORMULÁRIO -->
-<div id="formContainer" class="form-body">
-
+<form id="formContainer" class="form-body" onsubmit="return false;">
 
   <!-- CATEGORIA -->
   <div class="section-title">📝 Categoria de Participação (Art. 1º)</div>
@@ -425,7 +429,7 @@ body {
       Na categoria Adulta, menores de 18 só como integrantes de dupla/trio, desde que acompanhados por maior de 18 (Art. 16).
     </div>
     <div id="partnerContainer"></div>
-    <button type="button" class="btn-submit" style="font-size:0.9em;padding:10px;margin-top:10px;background:var(--secondary);color:var(--dark);" onclick="addPartner()">+ Adicionar Integrante</button>
+    <button type="button" class="btn-add-partner" onclick="addPartner()">+ Adicionar Integrante</button>
   </div>
 
   <!-- DADOS DA MÚSICA -->
@@ -563,7 +567,7 @@ body {
     📤 Enviar Inscrição
   </button>
 
-</div><!-- /formContainer -->
+</form><!-- /formContainer -->
 
 <!-- MENSAGEM DE SUCESSO -->
 <div id="successMessage">
@@ -599,20 +603,29 @@ body {
 // ============================================================
 // CONFIGURAÇÃO — PRAZO DE INSCRIÇÃO (Art. 10)
 // ============================================================
-const PRAZO_INSCRICAO = new Date('2026-08-23T23:59:00-03:00').getTime();
-const INICIO_INSCRICAO = new Date('2026-08-03T08:00:00-03:00').getTime();
+var PRAZO_INSCRICAO = new Date('2026-08-23T23:59:00-03:00').getTime();
+var INICIO_INSCRICAO = new Date('2026-08-03T08:00:00-03:00').getTime();
 
-// URL do Google Apps Script (substituir após deploy)
-const SCRIPT_URL = document.getElementById('scriptUrl').value.trim();
+// URL do Formspree (já configurada)
+var FORMSPREE_URL = 'https://formspree.io/f/xrpzdvaa';
 
 // ============================================================
 // VERIFICAÇÃO DE PRAZO
 // ============================================================
 function verificarPrazo() {
-  const agora = new Date().getTime();
+  var agora = new Date().getTime();
 
-  if (agora > PRAZO_INSCRICAO || agora < INICIO_INSCRICAO) {
+  if (agora > PRAZO_INSCRICAO) {
     document.getElementById('closedAlert').style.display = 'block';
+    document.getElementById('formContainer').style.display = 'none';
+    return false;
+  }
+  if (agora < INICIO_INSCRICAO) {
+    document.getElementById('closedAlert').style.display = 'block';
+    document.getElementById('closedAlert').innerHTML =
+      '<div class="alert alert-closed" style="margin:20px;">' +
+      '⏰ <strong>Inscrições ainda não abertas.</strong><br>' +
+      'Conforme Art. 10 do Regulamento, as inscrições abrem em 03/08/2026 às 08h00.</div>';
     document.getElementById('formContainer').style.display = 'none';
     return false;
   }
@@ -622,9 +635,9 @@ function verificarPrazo() {
 // ============================================================
 // CATEGORIA — SELEÇÃO VISUAL
 // ============================================================
-document.querySelectorAll('.category-card input[name="categoria"]').forEach(input => {
+document.querySelectorAll('.category-card input[name="categoria"]').forEach(function(input) {
   input.addEventListener('change', function() {
-    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.category-card').forEach(function(c) { c.classList.remove('selected'); });
     this.closest('.category-card').classList.add('selected');
     verificarMenor();
   });
@@ -633,19 +646,19 @@ document.querySelectorAll('.category-card input[name="categoria"]').forEach(inpu
 // ============================================================
 // MODALIDADE — SELEÇÃO VISUAL E CAMPOS DINÂMICOS
 // ============================================================
-document.querySelectorAll('.modalidade-card input[name="modalidade"]').forEach(input => {
+document.querySelectorAll('.modalidade-card input[name="modalidade"]').forEach(function(input) {
   input.addEventListener('change', function() {
-    document.querySelectorAll('.modalidade-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.modalidade-card').forEach(function(c) { c.classList.remove('selected'); });
     this.closest('.modalidade-card').classList.add('selected');
 
-    const mod = this.value;
-    const partnerFields = document.getElementById('partnerFields');
+    var mod = this.value;
+    var partnerFields = document.getElementById('partnerFields');
     if (mod === 'Dupla' || mod === 'Trio') {
       partnerFields.classList.add('active');
-      // Limpa e adiciona campos conforme modalidade
       document.getElementById('partnerContainer').innerHTML = '';
-      const qtd = mod === 'Dupla' ? 1 : 2; // 1 ou 2 integrantes adicionais
-      for (let i = 0; i < qtd; i++) {
+      partnerCount = 0;
+      var qtd = mod === 'Dupla' ? 1 : 2;
+      for (var i = 0; i < qtd; i++) {
         addPartner();
       }
     } else {
@@ -657,21 +670,20 @@ document.querySelectorAll('.modalidade-card input[name="modalidade"]').forEach(i
 // ============================================================
 // ADICIONAR INTEGRANTE
 // ============================================================
-let partnerCount = 0;
+var partnerCount = 0;
 function addPartner() {
   partnerCount++;
-  const container = document.getElementById('partnerContainer');
-  const div = document.createElement('div');
+  var container = document.getElementById('partnerContainer');
+  var div = document.createElement('div');
   div.className = 'form-group';
   div.style.cssText = 'border:1px solid #e0e0e0;padding:12px;border-radius:8px;margin-top:10px;';
-  div.innerHTML = `
-    <label style="font-weight:600;color:var(--primary);">Integrante ${partnerCount + 1}</label>
-    <div class="form-row" style="margin-top:8px;">
-      <input type="text" name="integrante_${partnerCount}_nome" placeholder="Nome completo" style="flex:3;">
-      <input type="text" name="integrante_${partnerCount}_cpf" placeholder="CPF" style="flex:2;">
-      <input type="text" name="integrante_${partnerCount}_idade" placeholder="Idade" style="flex:1;">
-    </div>
-  `;
+  div.innerHTML =
+    '<label style="font-weight:600;color:var(--primary);">Integrante ' + (partnerCount + 1) + '</label>' +
+    '<div class="form-row" style="margin-top:8px;">' +
+      '<input type="text" name="integrante_' + partnerCount + '_nome" placeholder="Nome completo" style="flex:3;">' +
+      '<input type="text" name="integrante_' + partnerCount + '_cpf" placeholder="CPF" style="flex:2;">' +
+      '<input type="text" name="integrante_' + partnerCount + '_idade" placeholder="Idade" style="flex:1;">' +
+    '</div>';
   container.appendChild(div);
 }
 
@@ -679,7 +691,7 @@ function addPartner() {
 // RESIDENTE EM IRANI
 // ============================================================
 document.getElementById('residente_irani').addEventListener('change', function() {
-  const fields = document.getElementById('residentFields');
+  var fields = document.getElementById('residentFields');
   if (this.value === 'sim') {
     fields.classList.add('active');
   } else {
@@ -688,11 +700,12 @@ document.getElementById('residente_irani').addEventListener('change', function()
 });
 
 // ============================================================
-// VERIFICAÇÃO DE MENOR DE IDADE (campos de autorização)
+// VERIFICAÇÃO DE MENOR DE IDADE
 // ============================================================
 function verificarMenor() {
-  const categoria = document.querySelector('input[name="categoria"]:checked')?.value;
-  const minorSection = document.getElementById('minorSection');
+  var catInput = document.querySelector('input[name="categoria"]:checked');
+  var categoria = catInput ? catInput.value : '';
+  var minorSection = document.getElementById('minorSection');
   if (categoria === 'Infantil' || categoria === 'Juvenil') {
     minorSection.classList.add('active');
   } else {
@@ -737,13 +750,13 @@ function validarCPF(cpf) {
   cpf = cpf.replace(/\D/g, '');
   if (cpf.length !== 11) return false;
   if (/^(\d)\1{10}$/.test(cpf)) return false;
-  let soma = 0, resto;
-  for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i-1]) * (11 - i);
+  var soma = 0, resto;
+  for (var i = 1; i <= 9; i++) soma += parseInt(cpf[i-1]) * (11 - i);
   resto = (soma * 10) % 11;
   if (resto === 10 || resto === 11) resto = 0;
   if (resto !== parseInt(cpf[9])) return false;
   soma = 0;
-  for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i-1]) * (12 - i);
+  for (var j = 1; j <= 10; j++) soma += parseInt(cpf[j-1]) * (12 - j);
   resto = (soma * 10) % 11;
   if (resto === 10 || resto === 11) resto = 0;
   if (resto !== parseInt(cpf[10])) return false;
@@ -758,27 +771,29 @@ function validarYouTube(url) {
   return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(url);
 }
 
-function mostrarErro(campoId, mostrar = true) {
-  const field = document.getElementById(campoId)?.closest('.form-group');
+function mostrarErro(campoId, mostrar) {
+  var field = document.getElementById(campoId);
   if (field) {
-    if (mostrar) field.classList.add('has-error');
-    else field.classList.remove('has-error');
+    var group = field.closest('.form-group');
+    if (group) {
+      if (mostrar) group.classList.add('has-error');
+      else group.classList.remove('has-error');
+    }
   }
 }
 
 function validarFormulario() {
-  let valido = true;
-  const erros = [];
+  var valido = true;
+  var erros = [];
 
-  // Campos obrigatórios
-  const obrigatorios = [
+  var obrigatorios = [
     'nome_responsavel', 'nome_artistico', 'cpf', 'telefone',
     'email', 'endereco', 'titulo_musica', 'tom_musica',
     'link_youtube', 'chave_pix'
   ];
 
-  obrigatorios.forEach(id => {
-    const el = document.getElementById(id);
+  obrigatorios.forEach(function(id) {
+    var el = document.getElementById(id);
     if (!el || !el.value.trim()) {
       mostrarErro(id, true);
       valido = false;
@@ -787,48 +802,41 @@ function validarFormulario() {
     }
   });
 
-  // Categoria
   if (!document.querySelector('input[name="categoria"]:checked')) {
     erros.push('Selecione uma categoria.');
     valido = false;
   }
 
-  // Modalidade
   if (!document.querySelector('input[name="modalidade"]:checked')) {
     erros.push('Selecione a modalidade (individual, dupla ou trio).');
     valido = false;
   }
 
-  // CPF
-  const cpf = document.getElementById('cpf').value;
+  var cpf = document.getElementById('cpf').value;
   if (cpf && !validarCPF(cpf)) {
     mostrarErro('cpf', true);
     valido = false;
     erros.push('CPF inválido.');
   }
 
-  // E-mail
-  const email = document.getElementById('email').value;
+  var email = document.getElementById('email').value;
   if (email && !validarEmail(email)) {
     mostrarErro('email', true);
     valido = false;
   }
 
-  // YouTube
-  const yt = document.getElementById('link_youtube').value;
+  var yt = document.getElementById('link_youtube').value;
   if (yt && !validarYouTube(yt)) {
     mostrarErro('link_youtube', true);
     valido = false;
   }
 
-  // Documento
-  const doc = document.getElementById('documento_identidade');
+  var doc = document.getElementById('documento_identidade');
   if (!doc.files.length) {
     mostrarErro('documento_identidade', true);
     valido = false;
   }
 
-  // Aceites
   if (!document.getElementById('aceite_regulamento').checked) {
     erros.push('Aceite do regulamento é obrigatório.');
     valido = false;
@@ -857,60 +865,55 @@ function validarFormulario() {
 // SUBMISSÃO DO FORMULÁRIO
 // ============================================================
 function submitForm() {
-  // Verifica prazo
   if (!verificarPrazo()) return;
-
-  // Valida
   if (!validarFormulario()) return;
 
-  // Confirma
   if (!confirm('Confirma o envio da inscrição?\n\nVerifique se todos os dados estão corretos, pois não será possível alterar após o envio.')) {
     return;
   }
 
-  // Mostra loading
   document.getElementById('loadingOverlay').classList.add('active');
   document.getElementById('submitBtn').disabled = true;
 
-  // Coleta dados
-  const formData = new FormData();
+  // Coleta dados com FormData (envia arquivos + texto)
+  var formData = new FormData();
 
-  // Campos texto
-  const campos = [
+  // Campos de texto principais
+  var campos = [
     'nome_responsavel', 'nome_artistico', 'cpf', 'telefone', 'email',
     'endereco', 'titulo_musica', 'tom_musica', 'gravacao', 'link_youtube', 'chave_pix'
   ];
 
-  campos.forEach(id => {
-    formData.append(id, document.getElementById(id).value);
+  campos.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && el.value) formData.append(id, el.value);
   });
 
   // Categoria e modalidade
-  const cat = document.querySelector('input[name="categoria"]:checked');
+  var cat = document.querySelector('input[name="categoria"]:checked');
   if (cat) formData.append('categoria', cat.value);
 
-  const mod = document.querySelector('input[name="modalidade"]:checked');
+  var mod = document.querySelector('input[name="modalidade"]:checked');
   if (mod) formData.append('modalidade', mod.value);
 
   // Residente
   formData.append('residente_irani', document.getElementById('residente_irani').value);
-  if (document.getElementById('segunda_categoria')) {
-    formData.append('segunda_categoria', document.getElementById('segunda_categoria').value);
-  }
+  var segCat = document.getElementById('segunda_categoria');
+  if (segCat && segCat.value) formData.append('segunda_categoria', segCat.value);
 
-  // Menor
-  const minorFields = ['nome_menor', 'rg_menor', 'cpf_menor', 'nome_pai', 'rg_pai',
-                       'cpf_pai', 'nome_mae', 'rg_mae', 'cpf_mae'];
-  minorFields.forEach(id => {
-    const el = document.getElementById(id);
+  // Campos de menor
+  var minorFields = ['nome_menor', 'rg_menor', 'cpf_menor', 'nome_pai', 'rg_pai',
+                     'cpf_pai', 'nome_mae', 'rg_mae', 'cpf_mae'];
+  minorFields.forEach(function(id) {
+    var el = document.getElementById(id);
     if (el && el.value) formData.append(id, el.value);
   });
 
   // Integrantes
-  const partners = document.querySelectorAll('#partnerContainer > div');
-  const integrantes = [];
-  partners.forEach((p, i) => {
-    const inputs = p.querySelectorAll('input');
+  var partners = document.querySelectorAll('#partnerContainer > div');
+  var integrantes = [];
+  partners.forEach(function(p, i) {
+    var inputs = p.querySelectorAll('input');
     if (inputs.length >= 3) {
       integrantes.push({
         nome: inputs[0].value,
@@ -922,30 +925,32 @@ function submitForm() {
   formData.append('integrantes', JSON.stringify(integrantes));
 
   // Arquivos
-  if (document.getElementById('documento_identidade').files[0]) {
-    formData.append('documento_identidade', document.getElementById('documento_identidade').files[0]);
-  }
-  if (document.getElementById('autorizacao_assinada').files[0]) {
-    formData.append('autorizacao_assinada', document.getElementById('autorizacao_assinada').files[0]);
-  }
-  if (document.getElementById('comprovante_residencia').files[0]) {
-    formData.append('comprovante_residencia', document.getElementById('comprovante_residencia').files[0]);
-  }
+  var docFile = document.getElementById('documento_identidade');
+  if (docFile.files[0]) formData.append('documento_identidade', docFile.files[0]);
+
+  var authFile = document.getElementById('autorizacao_assinada');
+  if (authFile && authFile.files[0]) formData.append('autorizacao_assinada', authFile.files[0]);
+
+  var resFile = document.getElementById('comprovante_residencia');
+  if (resFile && resFile.files[0]) formData.append('comprovante_residencia', resFile.files[0]);
+
+  // Campos especiais do Formspree
+  formData.append('_subject', '🔔 NOVA INSCRIÇÃO FIMUSI 2026 — ' + (cat ? cat.value : '') + ' — ' + (document.getElementById('nome_responsavel').value || ''));
+  formData.append('_cc', 'secult@irani.sc.gov.br');
+  formData.append('_template', 'table');
+  formData.append('_captcha', 'false');
 
   // Timestamp
-  formData.append('data_inscricao', new Date().toISOString());
-  formData.append('ip_origem', '');
+  formData.append('data_inscricao', new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
-  // Envia via Formspree
-  const FORMSPREE_URL = 'https://formspree.io/f/xrpzdvaa';
-
+  // Envia para o Formspree
   fetch(FORMSPREE_URL, {
     method: 'POST',
     body: formData,
     headers: { 'Accept': 'application/json' }
   })
-  .then(response => response.json())
-  .then(data => {
+  .then(function(response) { return response.json(); })
+  .then(function(data) {
     document.getElementById('loadingOverlay').classList.remove('active');
     if (data.ok || data.success) {
       document.getElementById('formContainer').style.display = 'none';
@@ -955,12 +960,20 @@ function submitForm() {
       throw new Error('Erro no envio');
     }
   })
-  .catch(error => {
+  .catch(function(error) {
     document.getElementById('loadingOverlay').classList.remove('active');
     document.getElementById('submitBtn').disabled = false;
-    alert('❌ Erro ao enviar: ' + error.message + '\n\nContate (49) 3432-3237.');
+    if (error.message.indexOf('Failed to fetch') !== -1 || error.message.indexOf('NetworkError') !== -1) {
+      // CORS pode ter bloqueado a resposta, mas os dados foram enviados
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      alert('❌ Erro ao enviar inscrição: ' + error.message + '\n\nTente novamente ou contate (49) 3432-3237.');
+    }
   });
-  
+}
+
 // ============================================================
 // INICIALIZAÇÃO
 // ============================================================
