@@ -948,45 +948,31 @@ function submitForm() {
   formData.append('data_inscricao', new Date().toISOString());
   formData.append('ip_origem', '');
 
-  // Envia
-  const url = document.getElementById('scriptUrl').value.trim();
+  // Envia via Formspree
+  const FORMSPREE_URL = 'https://formspree.io/f/xrpzdvaa';
 
-  if (!url || url === 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT') {
-    document.getElementById('loadingOverlay').classList.remove('active');
-    document.getElementById('submitBtn').disabled = false;
-    alert('⚠️ Configure a URL do Google Apps Script na seção "Configuração Técnica (Admin)" no topo do formulário.');
-    return;
-  }
-
-  fetch(url, {
+  fetch(FORMSPREE_URL, {
     method: 'POST',
-    body: formData
+    body: formData,
+    headers: { 'Accept': 'application/json' }
   })
   .then(response => response.json())
   .then(data => {
     document.getElementById('loadingOverlay').classList.remove('active');
-    if (data.success) {
+    if (data.ok || data.success) {
       document.getElementById('formContainer').style.display = 'none';
       document.getElementById('successMessage').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      throw new Error(data.message || 'Erro no servidor');
+      throw new Error('Erro no envio');
     }
   })
   .catch(error => {
     document.getElementById('loadingOverlay').classList.remove('active');
     document.getElementById('submitBtn').disabled = false;
-    // Fallback: mesmo com erro de CORS, provavelmente registrou
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      document.getElementById('formContainer').style.display = 'none';
-      document.getElementById('successMessage').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      alert('❌ Erro ao enviar inscrição: ' + error.message + '\n\nTente novamente ou contate (49) 3432-3237.');
-    }
+    alert('❌ Erro ao enviar: ' + error.message + '\n\nContate (49) 3432-3237.');
   });
-}
-
+  
 // ============================================================
 // INICIALIZAÇÃO
 // ============================================================
