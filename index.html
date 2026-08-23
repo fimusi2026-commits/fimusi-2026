@@ -274,6 +274,23 @@ body {
   font-size: 0.85em;
   color: #2c5282;
 }
+.platform-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.platform-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.78em;
+  font-weight: 600;
+}
+.badge-youtube { background: #ffe0e0; color: #cc0000; }
+.badge-drive { background: #e0f0ff; color: #1a73e8; }
+.badge-vimeo { background: #e0eaff; color: #1ab7ea; }
+.badge-outros { background: #f0f0f0; color: #555; }
 @media (max-width: 600px) {
   .header h1 { font-size: 1.5em; }
   .form-row { flex-direction: column; }
@@ -462,11 +479,30 @@ body {
     <label>Gravação a ser interpretada (Art. 13, VI)</label>
     <input type="text" name="gravacao" id="gravacao" placeholder="Nome do artista original / gravação de referência">
   </div>
+
+  <!-- LINK DO VÍDEO — MULTIPLATAFORMA -->
   <div class="form-group">
-    <label>Link oficial do vídeo no YouTube <span class="required">*</span></label>
-    <input type="url" name="link_youtube" id="link_youtube" placeholder="https://www.youtube.com/watch?v=...">
-    <div class="error-msg">Link do YouTube obrigatório (Art. 13, VIII e Art. 19, III).</div>
-    <small>Requisitos do vídeo (Art. 19): máximo 2 min | formato vertical | a capella (sem instrumento/playback/base) | voz do candidato apenas | publicado no YouTube do próprio candidato.</small>
+    <label>Link do vídeo de avaliação <span class="required">*</span></label>
+    <input type="url" name="link_video" id="link_video" placeholder="Cole aqui o link do vídeo (YouTube, Google Drive, Vimeo, etc.)">
+    <div class="error-msg">Link do vídeo obrigatório (Art. 13, VIII e Art. 19, III).</div>
+    <div class="platform-badges">
+      <span class="platform-badge badge-youtube">▶ YouTube</span>
+      <span class="platform-badge badge-drive">📁 Google Drive</span>
+      <span class="platform-badge badge-vimeo">🎬 Vimeo</span>
+      <span class="platform-badge badge-outros">🔗 Outras plataformas</span>
+    </div>
+    <small>
+      <strong>Requisitos do vídeo (Art. 19):</strong> duração máxima de 2 min | formato vertical | a capella (sem instrumento/playback/base) |
+      voz do candidato apenas | corresponde fielmente à música inscrita.
+    </small>
+    <div class="link-help">
+      💡 <strong>Como compartilhar seu vídeo:</strong><br>
+      • <strong>YouTube:</strong> Publique como "Não listado" e cole o link aqui.<br>
+      • <strong>Google Drive:</strong> Suba o vídeo → clique com botão direito → "Compartilhar" → mude para "Qualquer pessoa com o link" → copie e cole.<br>
+      • <strong>Vimeo:</strong> Publique o vídeo → copie a URL da página do vídeo.<br>
+      • <strong>Outras plataformas:</strong> Qualquer link público onde a banca consiga assistir ao vídeo funciona.<br>
+      ⚠️ <strong>Importante:</strong> Certifique-se de que o link está público (qualquer pessoa com o link consegue abrir, sem precisar de login ou senha).
+    </div>
   </div>
 
   <!-- DOCUMENTAÇÃO (via link) -->
@@ -764,8 +800,11 @@ function validarCPF(cpf) {
   return true;
 }
 function validarEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-function validarYouTube(url) { return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(url); }
-function validarURL(url) { return /^(https?:\/\/)/.test(url); }
+
+// Valida qualquer URL (YouTube, Google Drive, Vimeo, etc.)
+function validarURL(url) {
+  return /^https?:\/\/.+\..+/.test(url);
+}
 
 function mostrarErro(campoId, mostrar) {
   var field = document.getElementById(campoId);
@@ -784,7 +823,7 @@ function validarFormulario() {
   var obrigatorios = [
     'nome_responsavel', 'nome_artistico', 'cpf', 'telefone',
     'email', 'endereco', 'titulo_musica', 'tom_musica',
-    'link_youtube', 'chave_pix', 'link_documento_identidade'
+    'link_video', 'chave_pix', 'link_documento_identidade'
   ];
   obrigatorios.forEach(function(id) {
     var el = document.getElementById(id);
@@ -809,9 +848,10 @@ function validarFormulario() {
   if (email && !validarEmail(email)) {
     mostrarErro('email', true); valido = false;
   }
-  var yt = document.getElementById('link_youtube').value;
-  if (yt && !validarYouTube(yt)) {
-    mostrarErro('link_youtube', true); valido = false;
+  var videoLink = document.getElementById('link_video').value;
+  if (videoLink && !validarURL(videoLink)) {
+    mostrarErro('link_video', true); valido = false;
+    erros.push('Link do vídeo inválido. Cole um link completo (ex: https://...).');
   }
   var docLink = document.getElementById('link_documento_identidade').value;
   if (docLink && !validarURL(docLink)) {
@@ -849,32 +889,27 @@ function submitForm() {
   document.getElementById('loadingOverlay').classList.add('active');
   document.getElementById('submitBtn').disabled = true;
 
-  // Coleta TODOS os campos do formulário (texto apenas, sem arquivos)
   var form = document.getElementById('formContainer');
   var formData = new FormData(form);
 
-  // Campos especiais do Formspree
   var cat = document.querySelector('input[name="categoria"]:checked');
   var nomeResp = document.getElementById('nome_responsavel').value || '';
   formData.append('_subject', 'NOVA INSCRIÇÃO FIMUSI 2026 — ' + (cat ? cat.value : '') + ' — ' + nomeResp);
+  formData.append('_cc', 'secult@irani.sc.gov.br');
   formData.append('_template', 'table');
   formData.append('_captcha', 'false');
 
-  // Timestamp
   formData.append('data_inscricao', new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
-  // Envia para Formspree
   fetch(FORMSPREE_URL, {
     method: 'POST',
     body: formData,
     headers: { 'Accept': 'application/json' }
   })
   .then(function(response) {
-    // Formspree retorna 200 OK quando sucesso
     if (response.ok) {
       return response.json().catch(function() { return { ok: true }; });
     }
-    // Tenta extrair a mensagem de erro
     return response.json().then(function(data) {
       throw new Error(data.errors ? data.errors.map(function(e) { return e.message; }).join('; ') : 'Erro ' + response.status);
     }).catch(function() {
@@ -894,7 +929,6 @@ function submitForm() {
   });
 }
 
-// INICIALIZAÇÃO
 verificarPrazo();
 </script>
 
