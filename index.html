@@ -265,6 +265,15 @@ body {
   width: 100%;
 }
 .btn-add-partner:hover { opacity: 0.9; }
+.link-help {
+  background: #e8f4fd;
+  border: 1px solid #3498db;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 0.85em;
+  color: #2c5282;
+}
 @media (max-width: 600px) {
   .header h1 { font-size: 1.5em; }
   .form-row { flex-direction: column; }
@@ -353,7 +362,7 @@ body {
     </div>
   </div>
 
-  <!-- DADOS DO RESPONSÁVEL PELA INSCRIÇÃO -->
+  <!-- DADOS DO RESPONSÁVEL -->
   <div class="section-title">📋 Dados do Responsável pela Inscrição (Art. 13, I-II)</div>
   <div class="form-row">
     <div class="form-group" style="flex:3;">
@@ -406,9 +415,12 @@ body {
       Não precisam enviar vídeo (Art. 31), mas serão avaliados pela Banda APK no ensaio.
     </div>
     <div class="form-group">
-      <label>Comprovante de residência (JPEG/PNG) — Art. 4º</label>
-      <input type="file" name="comprovante_residencia" id="comprovante_residencia" accept="image/jpeg,image/png">
-      <small>Documento comprobatório de residência há pelo menos 2 anos.</small>
+      <label>Link do comprovante de residência (Google Drive) — Art. 4º</label>
+      <input type="url" name="link_comprovante_residencia" id="link_comprovante_residencia" placeholder="https://drive.google.com/...">
+      <div class="link-help">
+        💡 Como enviar: Tire foto do comprovante → suba no <a href="https://drive.google.com" target="_blank">Google Drive</a> →
+        clique com botão direito → "Compartilhar" → mude para "Qualquer pessoa com o link" → copie e cole o link aqui.
+      </div>
     </div>
     <div class="form-group">
       <label>Segunda categoria (apenas para residentes — Art. 4º)</label>
@@ -422,7 +434,7 @@ body {
     </div>
   </div>
 
-  <!-- DADOS DE INTEGRANTES (se dupla/trio) -->
+  <!-- INTEGRANTES -->
   <div class="partner-fields" id="partnerFields">
     <div class="section-title">📋 Dados dos Demais Integrantes (Art. 13, III)</div>
     <div class="alert alert-info">
@@ -457,13 +469,17 @@ body {
     <small>Requisitos do vídeo (Art. 19): máximo 2 min | formato vertical | a capella (sem instrumento/playback/base) | voz do candidato apenas | publicado no YouTube do próprio candidato.</small>
   </div>
 
-  <!-- DOCUMENTAÇÃO -->
+  <!-- DOCUMENTAÇÃO (via link) -->
   <div class="section-title">📎 Documentação (Art. 6º e Art. 23)</div>
   <div class="form-group">
-    <label>Documento de identificação oficial (JPEG/PNG) <span class="required">*</span></label>
-    <input type="file" name="documento_identidade" id="documento_identidade" accept="image/jpeg,image/png">
-    <div class="error-msg">Documento obrigatório para comprovação de idade.</div>
+    <label>Link do documento de identificação oficial <span class="required">*</span></label>
+    <input type="url" name="link_documento_identidade" id="link_documento_identidade" placeholder="https://drive.google.com/...">
+    <div class="error-msg">Link do documento obrigatório para comprovação de idade.</div>
     <small>RG, CNH ou certidão de nascimento. Formatos aceitos: JPEG ou PNG (Art. 23).</small>
+    <div class="link-help">
+      💡 Como enviar: Tire foto do documento → suba no <a href="https://drive.google.com" target="_blank">Google Drive</a> →
+      clique com botão direito → "Compartilhar" → mude para "Qualquer pessoa com o link" → copie e cole o link aqui.
+    </div>
   </div>
 
   <!-- AUTORIZAÇÃO PARA MENORES -->
@@ -515,8 +531,8 @@ body {
       </div>
     </div>
     <div class="form-group">
-      <label>Autorização assinada (JPEG/PNG)</label>
-      <input type="file" name="autorizacao_assinada" id="autorizacao_assinada" accept="image/jpeg,image/png">
+      <label>Link da autorização assinada (Google Drive)</label>
+      <input type="url" name="link_autorizacao_assinada" id="link_autorizacao_assinada" placeholder="https://drive.google.com/...">
       <small>Foto ou escaneamento da autorização assinada pelos pais/responsáveis.</small>
     </div>
   </div>
@@ -567,9 +583,9 @@ body {
     📤 Enviar Inscrição
   </button>
 
-</form><!-- /formContainer -->
+</form>
 
-<!-- MENSAGEM DE SUCESSO -->
+<!-- SUCESSO -->
 <div id="successMessage">
   <div class="check-icon">✅</div>
   <h2>Inscrição Enviada com Sucesso!</h2>
@@ -582,7 +598,7 @@ body {
   </p>
 </div>
 
-<!-- OVERLAY DE CARREGAMENTO -->
+<!-- LOADING -->
 <div id="loadingOverlay">
   <div style="text-align:center;">
     <div class="spinner"></div>
@@ -597,24 +613,21 @@ body {
   Contato: (49) 3432-3237 | secult@irani.sc.gov.br | fimusi2026@gmail.com
 </div>
 
-</div><!-- /container -->
+</div>
 
 <script>
 // ============================================================
-// CONFIGURAÇÃO — PRAZO DE INSCRIÇÃO (Art. 10)
+// CONFIGURAÇÃO
 // ============================================================
 var PRAZO_INSCRICAO = new Date('2026-08-23T23:59:00-03:00').getTime();
 var INICIO_INSCRICAO = new Date('2026-08-03T08:00:00-03:00').getTime();
-
-// URL do Formspree (já configurada)
 var FORMSPREE_URL = 'https://formspree.io/f/xrpzdvaa';
 
 // ============================================================
-// VERIFICAÇÃO DE PRAZO
+// PRAZO
 // ============================================================
 function verificarPrazo() {
   var agora = new Date().getTime();
-
   if (agora > PRAZO_INSCRICAO) {
     document.getElementById('closedAlert').style.display = 'block';
     document.getElementById('formContainer').style.display = 'none';
@@ -633,7 +646,7 @@ function verificarPrazo() {
 }
 
 // ============================================================
-// CATEGORIA — SELEÇÃO VISUAL
+// CATEGORIA
 // ============================================================
 document.querySelectorAll('.category-card input[name="categoria"]').forEach(function(input) {
   input.addEventListener('change', function() {
@@ -644,13 +657,12 @@ document.querySelectorAll('.category-card input[name="categoria"]').forEach(func
 });
 
 // ============================================================
-// MODALIDADE — SELEÇÃO VISUAL E CAMPOS DINÂMICOS
+// MODALIDADE
 // ============================================================
 document.querySelectorAll('.modalidade-card input[name="modalidade"]').forEach(function(input) {
   input.addEventListener('change', function() {
     document.querySelectorAll('.modalidade-card').forEach(function(c) { c.classList.remove('selected'); });
     this.closest('.modalidade-card').classList.add('selected');
-
     var mod = this.value;
     var partnerFields = document.getElementById('partnerFields');
     if (mod === 'Dupla' || mod === 'Trio') {
@@ -658,9 +670,7 @@ document.querySelectorAll('.modalidade-card input[name="modalidade"]').forEach(f
       document.getElementById('partnerContainer').innerHTML = '';
       partnerCount = 0;
       var qtd = mod === 'Dupla' ? 1 : 2;
-      for (var i = 0; i < qtd; i++) {
-        addPartner();
-      }
+      for (var i = 0; i < qtd; i++) { addPartner(); }
     } else {
       partnerFields.classList.remove('active');
     }
@@ -668,7 +678,7 @@ document.querySelectorAll('.modalidade-card input[name="modalidade"]').forEach(f
 });
 
 // ============================================================
-// ADICIONAR INTEGRANTE
+// INTEGRANTE
 // ============================================================
 var partnerCount = 0;
 function addPartner() {
@@ -688,19 +698,16 @@ function addPartner() {
 }
 
 // ============================================================
-// RESIDENTE EM IRANI
+// RESIDENTE
 // ============================================================
 document.getElementById('residente_irani').addEventListener('change', function() {
   var fields = document.getElementById('residentFields');
-  if (this.value === 'sim') {
-    fields.classList.add('active');
-  } else {
-    fields.classList.remove('active');
-  }
+  if (this.value === 'sim') { fields.classList.add('active'); }
+  else { fields.classList.remove('active'); }
 });
 
 // ============================================================
-// VERIFICAÇÃO DE MENOR DE IDADE
+// MENOR
 // ============================================================
 function verificarMenor() {
   var catInput = document.querySelector('input[name="categoria"]:checked');
@@ -723,7 +730,6 @@ function mascaraCPF(v) {
   v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
   return v;
 }
-
 function mascaraTelefone(v) {
   v = v.replace(/\D/g, '');
   if (v.length <= 10) {
@@ -735,13 +741,8 @@ function mascaraTelefone(v) {
   }
   return v;
 }
-
-document.getElementById('cpf').addEventListener('input', function() {
-  this.value = mascaraCPF(this.value);
-});
-document.getElementById('telefone').addEventListener('input', function() {
-  this.value = mascaraTelefone(this.value);
-});
+document.getElementById('cpf').addEventListener('input', function() { this.value = mascaraCPF(this.value); });
+document.getElementById('telefone').addEventListener('input', function() { this.value = mascaraTelefone(this.value); });
 
 // ============================================================
 // VALIDAÇÃO
@@ -762,14 +763,9 @@ function validarCPF(cpf) {
   if (resto !== parseInt(cpf[10])) return false;
   return true;
 }
-
-function validarEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function validarYouTube(url) {
-  return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(url);
-}
+function validarEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+function validarYouTube(url) { return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(url); }
+function validarURL(url) { return /^(https?:\/\/)/.test(url); }
 
 function mostrarErro(campoId, mostrar) {
   var field = document.getElementById(campoId);
@@ -785,13 +781,11 @@ function mostrarErro(campoId, mostrar) {
 function validarFormulario() {
   var valido = true;
   var erros = [];
-
   var obrigatorios = [
     'nome_responsavel', 'nome_artistico', 'cpf', 'telefone',
     'email', 'endereco', 'titulo_musica', 'tom_musica',
-    'link_youtube', 'chave_pix'
+    'link_youtube', 'chave_pix', 'link_documento_identidade'
   ];
-
   obrigatorios.forEach(function(id) {
     var el = document.getElementById(id);
     if (!el || !el.value.trim()) {
@@ -801,73 +795,53 @@ function validarFormulario() {
       mostrarErro(id, false);
     }
   });
-
   if (!document.querySelector('input[name="categoria"]:checked')) {
-    erros.push('Selecione uma categoria.');
-    valido = false;
+    erros.push('Selecione uma categoria.'); valido = false;
   }
-
   if (!document.querySelector('input[name="modalidade"]:checked')) {
-    erros.push('Selecione a modalidade (individual, dupla ou trio).');
-    valido = false;
+    erros.push('Selecione a modalidade.'); valido = false;
   }
-
   var cpf = document.getElementById('cpf').value;
   if (cpf && !validarCPF(cpf)) {
-    mostrarErro('cpf', true);
-    valido = false;
-    erros.push('CPF inválido.');
+    mostrarErro('cpf', true); valido = false; erros.push('CPF inválido.');
   }
-
   var email = document.getElementById('email').value;
   if (email && !validarEmail(email)) {
-    mostrarErro('email', true);
-    valido = false;
+    mostrarErro('email', true); valido = false;
   }
-
   var yt = document.getElementById('link_youtube').value;
   if (yt && !validarYouTube(yt)) {
-    mostrarErro('link_youtube', true);
-    valido = false;
+    mostrarErro('link_youtube', true); valido = false;
   }
-
-  var doc = document.getElementById('documento_identidade');
-  if (!doc.files.length) {
-    mostrarErro('documento_identidade', true);
-    valido = false;
+  var docLink = document.getElementById('link_documento_identidade').value;
+  if (docLink && !validarURL(docLink)) {
+    mostrarErro('link_documento_identidade', true); valido = false;
+    erros.push('Link do documento inválido.');
   }
-
   if (!document.getElementById('aceite_regulamento').checked) {
-    erros.push('Aceite do regulamento é obrigatório.');
-    valido = false;
+    erros.push('Aceite do regulamento é obrigatório.'); valido = false;
   }
   if (!document.getElementById('aceite_lgpd').checked) {
-    erros.push('Aceite da LGPD é obrigatório.');
-    valido = false;
+    erros.push('Aceite da LGPD é obrigatório.'); valido = false;
   }
   if (!document.getElementById('aceite_imagem').checked) {
-    erros.push('Autorização de uso de imagem é obrigatória.');
-    valido = false;
+    erros.push('Autorização de uso de imagem é obrigatória.'); valido = false;
   }
   if (!document.getElementById('aceite_video').checked) {
-    erros.push('Declaração sobre o vídeo é obrigatória.');
-    valido = false;
+    erros.push('Declaração sobre o vídeo é obrigatória.'); valido = false;
   }
-
   if (erros.length > 0) {
     alert('⚠️ Corrija os seguintes itens:\n\n• ' + erros.join('\n• '));
   }
-
   return valido;
 }
 
 // ============================================================
-// SUBMISSÃO DO FORMULÁRIO
+// SUBMISSÃO
 // ============================================================
 function submitForm() {
   if (!verificarPrazo()) return;
   if (!validarFormulario()) return;
-
   if (!confirm('Confirma o envio da inscrição?\n\nVerifique se todos os dados estão corretos, pois não será possível alterar após o envio.')) {
     return;
   }
@@ -875,108 +849,52 @@ function submitForm() {
   document.getElementById('loadingOverlay').classList.add('active');
   document.getElementById('submitBtn').disabled = true;
 
-  // Coleta dados com FormData (envia arquivos + texto)
-  var formData = new FormData();
-
-  // Campos de texto principais
-  var campos = [
-    'nome_responsavel', 'nome_artistico', 'cpf', 'telefone', 'email',
-    'endereco', 'titulo_musica', 'tom_musica', 'gravacao', 'link_youtube', 'chave_pix'
-  ];
-
-  campos.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el && el.value) formData.append(id, el.value);
-  });
-
-  // Categoria e modalidade
-  var cat = document.querySelector('input[name="categoria"]:checked');
-  if (cat) formData.append('categoria', cat.value);
-
-  var mod = document.querySelector('input[name="modalidade"]:checked');
-  if (mod) formData.append('modalidade', mod.value);
-
-  // Residente
-  formData.append('residente_irani', document.getElementById('residente_irani').value);
-  var segCat = document.getElementById('segunda_categoria');
-  if (segCat && segCat.value) formData.append('segunda_categoria', segCat.value);
-
-  // Campos de menor
-  var minorFields = ['nome_menor', 'rg_menor', 'cpf_menor', 'nome_pai', 'rg_pai',
-                     'cpf_pai', 'nome_mae', 'rg_mae', 'cpf_mae'];
-  minorFields.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el && el.value) formData.append(id, el.value);
-  });
-
-  // Integrantes
-  var partners = document.querySelectorAll('#partnerContainer > div');
-  var integrantes = [];
-  partners.forEach(function(p, i) {
-    var inputs = p.querySelectorAll('input');
-    if (inputs.length >= 3) {
-      integrantes.push({
-        nome: inputs[0].value,
-        cpf: inputs[1].value,
-        idade: inputs[2].value
-      });
-    }
-  });
-  formData.append('integrantes', JSON.stringify(integrantes));
-
-  // Arquivos
-  var docFile = document.getElementById('documento_identidade');
-  if (docFile.files[0]) formData.append('documento_identidade', docFile.files[0]);
-
-  var authFile = document.getElementById('autorizacao_assinada');
-  if (authFile && authFile.files[0]) formData.append('autorizacao_assinada', authFile.files[0]);
-
-  var resFile = document.getElementById('comprovante_residencia');
-  if (resFile && resFile.files[0]) formData.append('comprovante_residencia', resFile.files[0]);
+  // Coleta TODOS os campos do formulário (texto apenas, sem arquivos)
+  var form = document.getElementById('formContainer');
+  var formData = new FormData(form);
 
   // Campos especiais do Formspree
-  formData.append('_subject', '🔔 NOVA INSCRIÇÃO FIMUSI 2026 — ' + (cat ? cat.value : '') + ' — ' + (document.getElementById('nome_responsavel').value || ''));
-  formData.append('_cc', 'secult@irani.sc.gov.br');
+  var cat = document.querySelector('input[name="categoria"]:checked');
+  var nomeResp = document.getElementById('nome_responsavel').value || '';
+  formData.append('_subject', 'NOVA INSCRIÇÃO FIMUSI 2026 — ' + (cat ? cat.value : '') + ' — ' + nomeResp);
   formData.append('_template', 'table');
   formData.append('_captcha', 'false');
 
   // Timestamp
   formData.append('data_inscricao', new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
-  // Envia para o Formspree
+  // Envia para Formspree
   fetch(FORMSPREE_URL, {
     method: 'POST',
     body: formData,
     headers: { 'Accept': 'application/json' }
   })
-  .then(function(response) { return response.json(); })
+  .then(function(response) {
+    // Formspree retorna 200 OK quando sucesso
+    if (response.ok) {
+      return response.json().catch(function() { return { ok: true }; });
+    }
+    // Tenta extrair a mensagem de erro
+    return response.json().then(function(data) {
+      throw new Error(data.errors ? data.errors.map(function(e) { return e.message; }).join('; ') : 'Erro ' + response.status);
+    }).catch(function() {
+      throw new Error('Erro HTTP ' + response.status);
+    });
+  })
   .then(function(data) {
     document.getElementById('loadingOverlay').classList.remove('active');
-    if (data.ok || data.success) {
-      document.getElementById('formContainer').style.display = 'none';
-      document.getElementById('successMessage').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      throw new Error('Erro no envio');
-    }
+    document.getElementById('formContainer').style.display = 'none';
+    document.getElementById('successMessage').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   })
   .catch(function(error) {
     document.getElementById('loadingOverlay').classList.remove('active');
     document.getElementById('submitBtn').disabled = false;
-    if (error.message.indexOf('Failed to fetch') !== -1 || error.message.indexOf('NetworkError') !== -1) {
-      // CORS pode ter bloqueado a resposta, mas os dados foram enviados
-      document.getElementById('formContainer').style.display = 'none';
-      document.getElementById('successMessage').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      alert('❌ Erro ao enviar inscrição: ' + error.message + '\n\nTente novamente ou contate (49) 3432-3237.');
-    }
+    alert('❌ Erro ao enviar inscrição:\n\n' + error.message + '\n\nTente novamente ou contate (49) 3432-3237.');
   });
 }
 
-// ============================================================
 // INICIALIZAÇÃO
-// ============================================================
 verificarPrazo();
 </script>
 
